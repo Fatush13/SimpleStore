@@ -7,12 +7,17 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface ItemRepository extends CrudRepository<Item, Long> {
 
-    Optional<Item> findItemByName(String name);
+    Optional<Item> findById(UUID itemId);
 
-    Page<Item> findAllItems(Pageable pageable);
+    Page<Item> findAll(Pageable pageable);
+
+    void deleteById(UUID itemId);
+
+    boolean existsById(UUID itemId);
 
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 
 @Data
 public class ItemDto {
@@ -15,10 +16,10 @@ public class ItemDto {
 
     @NotNull
     @Min(0)
-    private Double price;
+    private BigDecimal price;
 
     @NotNull
     @Min(0)
-    private Integer quantity;
+    private Long quantity;
 
 }

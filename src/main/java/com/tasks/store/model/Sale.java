@@ -19,6 +19,6 @@ public class Sale {
     private Item item;
 
     @Column(nullable = false)
-    private Integer quantitySold;
+    private Long quantitySold;
 
 }

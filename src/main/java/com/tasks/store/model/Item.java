@@ -21,6 +21,6 @@ public class Item {
     private BigDecimal price;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private Long quantity;
 
 }
