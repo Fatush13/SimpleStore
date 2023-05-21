@@ -1,5 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: classpath:/db/changelog/tables/010_item.yaml
-  - include:
-      file: classpath:/db/changelog/020_sale.yaml

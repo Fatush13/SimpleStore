@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: tables/010_item.yaml
+      relativeToChangelogFile: false
+  - include:
+      file: tables/020_sale.yaml
+      relativeToChangelogFile: false
