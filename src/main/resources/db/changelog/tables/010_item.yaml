@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_item_table
+      author: valentin
+      changes:
+        - createTable:
+            tableName: item
+            remarks: unique product from the range
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: text
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: price
+                  type: decimal(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: integer
+                  constraints:
+                    nullable: false

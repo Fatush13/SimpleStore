@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_sale_table
+      author: valentin
+      changes:
+        - createTable:
+            tableName: sale
+            remarks: sale of items
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: item_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_sale_item
+                    references: item(id)
+              - column:
+                  name: quantity_sold
+                  type: integer
+                  constraints:
+                    nullable: false
