@@ -8,7 +8,7 @@ spring:
         hibernate:
           default_schema: store_schema
   datasource:
-    url: jdbc:postgresql://db:5432/store_db
+    url: jdbc:postgresql://localhost:5432/store_db
     username: postgres
     password: postgres
   liquibase:

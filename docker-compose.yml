@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
 
@@ -11,6 +11,9 @@ services:
       POSTGRES_DB: store_db
     ports:
       - "5432:5432"
+    profiles:
+      - database
+      - app
 
   pgadmin:
     image: dpage/pgadmin4
@@ -22,6 +25,9 @@ services:
       - "5050:80"
     depends_on:
       - db
+    profiles:
+      - database
+      - app
 
   store-service:
     build: .
