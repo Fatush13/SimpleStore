@@ -4,6 +4,7 @@ databaseChangeLog:
       author: valentin
       changes:
         - createTable:
+            schemaName: store_schema
             tableName: item
             remarks: unique product from the range
             columns:

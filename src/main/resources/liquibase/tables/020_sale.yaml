@@ -4,6 +4,7 @@ databaseChangeLog:
       author: valentin
       changes:
         - createTable:
+            schemaName: store_schema
             tableName: sale
             remarks: sale of items
             columns:
@@ -19,7 +20,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk_sale_item
-                    references: item(id)
+                    references: store_schema.item(id)
               - column:
                   name: quantity_sold
                   type: integer

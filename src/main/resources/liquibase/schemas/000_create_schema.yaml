@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_store_schema
+      author: valentin
+      changes:
+        - sql:
+            sql: CREATE SCHEMA IF NOT EXISTS store_schema

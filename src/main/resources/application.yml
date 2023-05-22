@@ -1,5 +1,22 @@
+server:
+  port: 8080
+
 spring:
+  spring:
+    jpa:
+      properties:
+        hibernate:
+          default_schema: store_schema
   datasource:
-    url: jdbc:postgresql://localhost:5432/store
+    url: jdbc:postgresql://db:5432/store_db
     username: postgres
     password: postgres
+  liquibase:
+    enabled: false
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+springdoc:
+  swagger-ui:
+    path: /store/swagger-ui
