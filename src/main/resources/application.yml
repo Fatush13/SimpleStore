@@ -12,9 +12,6 @@ spring:
     password: postgres
   liquibase:
     enabled: false
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
 
 springdoc:
   swagger-ui:

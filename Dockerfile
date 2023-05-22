@@ -7,5 +7,7 @@ ARG JAR_FILE=target/*.jar
 # Add the application's jar to the container
 ADD ${JAR_FILE} app.jar
 
+EXPOSE 8080
+
 # Run the jar file
 ENTRYPOINT ["java","-jar","/app.jar"]
