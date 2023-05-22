@@ -3,9 +3,11 @@ package com.tasks.store.service;
 import com.tasks.store.error.InsufficientStockException;
 import com.tasks.store.error.ItemNotFoundException;
 import com.tasks.store.mapper.ItemMapper;
+import com.tasks.store.mapper.SaleMapper;
 import com.tasks.store.model.Item;
 import com.tasks.store.model.ItemDto;
 import com.tasks.store.model.Sale;
+import com.tasks.store.model.SaleDto;
 import com.tasks.store.repository.ItemRepository;
 import com.tasks.store.repository.SaleRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class StoreService {
     private final ItemRepository itemRepository;
     private final SaleRepository saleRepository;
     private final ItemMapper itemMapper;
+    private final SaleMapper saleMapper;
 
     @Transactional
     public ItemDto addItem(ItemDto itemDto) {
@@ -76,8 +79,8 @@ public class StoreService {
         saleRepository.save(sale);
     }
 
-    public Page<Sale> getSoldItems(UUID itemId, Pageable pageable) {
-        return saleRepository.findByItemId(itemId, pageable);
+    public Page<SaleDto> getSoldItems(UUID itemId, Pageable pageable) {
+        return saleRepository.findByItemId(itemId, pageable).map(saleMapper::toSaleDto);
     }
 
     public Long getStockQuantity(UUID itemId) {

@@ -32,7 +32,7 @@ You can access the following services:
 You can use Docker Compose profiles to control which services to start:
 
 - Database and PgAdmin: `docker-compose --profile database up`
-- Store Service, Database and PgAdmin (app): `docker-compose --profile app up`
+- Store Service, Database and PgAdmin: `docker-compose --profile app up`
 
 ## Database Migration
 

@@ -2,11 +2,10 @@ server:
   port: 8080
 
 spring:
-  spring:
-    jpa:
-      properties:
-        hibernate:
-          default_schema: store_schema
+  jpa:
+    properties:
+      hibernate:
+        default_schema: store_schema
   datasource:
     url: jdbc:postgresql://localhost:5432/store_db
     username: postgres

@@ -1,7 +1,7 @@
 package com.tasks.store.controller;
 
 import com.tasks.store.model.ItemDto;
-import com.tasks.store.model.Sale;
+import com.tasks.store.model.SaleDto;
 import com.tasks.store.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,7 +13,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.UUID;
@@ -95,7 +103,7 @@ public class StoreController {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of sold items"),
                     @ApiResponse(responseCode = "404", description = "The item you were trying to reach is not found")
             })
-    public ResponseEntity<Page<Sale>> getSoldItems(
+    public ResponseEntity<Page<SaleDto>> getSoldItems(
             @Parameter(description = "Item Id to get sell operations for", required = true) @PathVariable UUID itemId,
             Pageable pageable) {
         return new ResponseEntity<>(storeService.getSoldItems(itemId, pageable), HttpStatus.OK);
