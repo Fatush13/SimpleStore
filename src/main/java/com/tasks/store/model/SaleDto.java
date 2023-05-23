@@ -9,7 +9,7 @@ public class SaleDto {
 
     private UUID id;
 
-    private ItemDto item;
+    private CreateItemDto item;
 
     private Long quantitySold;
 

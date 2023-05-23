@@ -4,6 +4,7 @@ import com.tasks.store.error.InsufficientStockException;
 import com.tasks.store.error.ItemNotFoundException;
 import com.tasks.store.mapper.ItemMapper;
 import com.tasks.store.mapper.SaleMapper;
+import com.tasks.store.model.CreateItemDto;
 import com.tasks.store.model.Item;
 import com.tasks.store.model.ItemDto;
 import com.tasks.store.model.Sale;
@@ -12,10 +13,12 @@ import com.tasks.store.repository.ItemRepository;
 import com.tasks.store.repository.SaleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -29,19 +32,19 @@ public class StoreService {
     private final SaleMapper saleMapper;
 
     @Transactional
-    public ItemDto addItem(ItemDto itemDto) {
-        Item item = itemMapper.toItem(itemDto);
+    public ItemDto addItem(CreateItemDto createItemDto) {
+        Item item = itemMapper.toItem(createItemDto);
 
         return itemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Transactional
-    public ItemDto updateItem(UUID itemId, ItemDto itemDto) {
+    public ItemDto updateItem(UUID itemId, CreateItemDto createItemDto) {
         return itemRepository.findById(itemId)
                 .map(item -> {
-                    item.setName(itemDto.getName());
-                    item.setPrice(itemDto.getPrice());
-                    item.setQuantity(itemDto.getQuantity());
+                    item.setName(createItemDto.getName());
+                    item.setPrice(createItemDto.getPrice());
+                    item.setQuantity(createItemDto.getQuantity());
                     return itemMapper.toItemDto(itemRepository.save(item));
                 })
                 .orElseThrow(() -> new ItemNotFoundException(itemId));
@@ -52,22 +55,31 @@ public class StoreService {
         if (!itemRepository.existsById(itemId)) {
             throw new ItemNotFoundException(itemId);
         }
-        itemRepository.deleteById(itemId);
+        itemRepository.markAsDeleted(itemId);
     }
 
     public ItemDto getItem(UUID itemId) {
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException(itemId));
+        Item item = itemRepository.findById(itemId)
+                .filter(product -> !product.isDeleted())
+                .orElseThrow(() -> new ItemNotFoundException(itemId));
 
         return itemMapper.toItemDto(item);
     }
 
     public Page<ItemDto> getAllItems(Pageable pageable) {
-        return itemRepository.findAll(pageable).map(itemMapper::toItemDto);
+        List<ItemDto> items = itemRepository.findAll(pageable).stream()
+                .filter(item -> !item.isDeleted())
+                .map(itemMapper::toItemDto)
+                .toList();
+
+        return new PageImpl<>(items);
     }
 
     @Transactional
     public void sellItem(UUID itemId, long quantity) {
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException(itemId));
+        Item item = itemRepository.findById(itemId)
+                .filter(product -> !product.isDeleted())
+                .orElseThrow(() -> new ItemNotFoundException(itemId));
 
         if (item.getQuantity() < quantity) {
             throw new InsufficientStockException(itemId);
@@ -76,6 +88,7 @@ public class StoreService {
         Sale sale = new Sale();
         sale.setItem(item);
         sale.setQuantitySold(quantity);
+
         saleRepository.save(sale);
     }
 
@@ -85,6 +98,7 @@ public class StoreService {
 
     public Long getStockQuantity(UUID itemId) {
         return itemRepository.findById(itemId)
+                .filter(item -> !item.isDeleted())
                 .map(Item::getQuantity)
                 .orElseThrow(() -> new ItemNotFoundException(itemId));
     }

@@ -30,4 +30,7 @@ public class Item {
     @Column(nullable = false)
     private Long quantity;
 
+    @Column(nullable = false)
+    private boolean isDeleted;
+
 }

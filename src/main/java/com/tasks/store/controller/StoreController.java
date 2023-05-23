@@ -1,5 +1,6 @@
 package com.tasks.store.controller;
 
+import com.tasks.store.model.CreateItemDto;
 import com.tasks.store.model.ItemDto;
 import com.tasks.store.model.SaleDto;
 import com.tasks.store.service.StoreService;
@@ -38,8 +39,8 @@ public class StoreController {
     @PostMapping("/item")
     @Operation(summary = "Add a new item in the store",
             responses = {@ApiResponse(responseCode = "201", description = "Item successfully created")})
-    public ResponseEntity<ItemDto> addItem(@Valid @RequestBody ItemDto itemDto) {
-        return new ResponseEntity<>(storeService.addItem(itemDto), HttpStatus.CREATED);
+    public ResponseEntity<ItemDto> addItem(@Valid @RequestBody CreateItemDto createItemDto) {
+        return new ResponseEntity<>(storeService.addItem(createItemDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/item/{itemId}")
@@ -50,8 +51,8 @@ public class StoreController {
             })
     public ResponseEntity<ItemDto> updateItem(
             @Parameter(description = "Item Id to update an item", required = true) @PathVariable UUID itemId,
-            @RequestBody ItemDto itemDto) {
-        return new ResponseEntity<>(storeService.updateItem(itemId, itemDto), HttpStatus.OK);
+            @RequestBody CreateItemDto createItemDto) {
+        return new ResponseEntity<>(storeService.updateItem(itemId, createItemDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/item/{itemId}")

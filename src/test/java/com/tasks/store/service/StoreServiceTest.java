@@ -5,6 +5,7 @@ import com.tasks.store.error.ItemNotFoundException;
 import com.tasks.store.mapper.ItemMapper;
 import com.tasks.store.mapper.SaleMapper;
 import com.tasks.store.model.Item;
+import com.tasks.store.model.CreateItemDto;
 import com.tasks.store.model.ItemDto;
 import com.tasks.store.model.Sale;
 import com.tasks.store.model.SaleDto;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -56,16 +58,18 @@ class StoreServiceTest {
 
     @Test
     void testAddItem() {
-        ItemDto itemDto = new ItemDto();
+        CreateItemDto createItemDto = createItemDto();
+        ItemDto itemDto = toItemDto(createItemDto);
         Item item = new Item();
 
-        when(itemMapper.toItem(itemDto)).thenReturn(item);
+        when(itemMapper.toItem(createItemDto)).thenReturn(item);
         when(itemRepository.save(item)).thenReturn(item);
         when(itemMapper.toItemDto(item)).thenReturn(itemDto);
 
-        ItemDto result = storeService.addItem(itemDto);
+        ItemDto result = storeService.addItem(createItemDto);
 
-        assertThat(result).isEqualTo(itemDto);
+        assertThat(result).usingRecursiveComparison().ignoringFieldsOfTypes(UUID.class)
+                .isEqualTo(createItemDto);
     }
 
     @Nested
@@ -75,14 +79,16 @@ class StoreServiceTest {
         void getItem_whenItemExists() {
             UUID itemId = UUID.randomUUID();
             Item item = new Item();
-            ItemDto itemDto = new ItemDto();
+            CreateItemDto createItemDto = createItemDto();
+            ItemDto itemDto = toItemDto(createItemDto);
 
             when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
             when(itemMapper.toItemDto(item)).thenReturn(itemDto);
 
             ItemDto result = storeService.getItem(itemId);
 
-            assertThat(result).isEqualTo(itemDto);
+            assertThat(result).usingRecursiveComparison().ignoringFieldsOfTypes(UUID.class)
+                    .isEqualTo(createItemDto);
         }
 
         @Test
@@ -103,27 +109,29 @@ class StoreServiceTest {
         @Test
         void updateItem_whenItemExists() {
             UUID itemId = UUID.randomUUID();
-            ItemDto itemDto = new ItemDto();
+            CreateItemDto createItemDto = createItemDto();
+            ItemDto itemDto = toItemDto(createItemDto);
             Item item = new Item();
 
             when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
             when(itemRepository.save(item)).thenReturn(item);
             when(itemMapper.toItemDto(item)).thenReturn(itemDto);
 
-            ItemDto result = storeService.updateItem(itemId, itemDto);
+            ItemDto result = storeService.updateItem(itemId, createItemDto);
 
-            assertThat(result).isEqualTo(itemDto);
+            assertThat(result).usingRecursiveComparison().ignoringFieldsOfTypes(UUID.class)
+                    .isEqualTo(createItemDto);
         }
 
         @Test
         void updateItem_whenItemDoesNotExist() {
             UUID itemId = UUID.randomUUID();
-            ItemDto itemDto = new ItemDto();
+            CreateItemDto createItemDto = createItemDto();
 
             when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
 
             assertThatExceptionOfType(ItemNotFoundException.class)
-                    .isThrownBy(() -> storeService.updateItem(itemId, itemDto));
+                    .isThrownBy(() -> storeService.updateItem(itemId, createItemDto));
         }
 
     }
@@ -139,7 +147,7 @@ class StoreServiceTest {
 
             storeService.deleteItem(itemId);
 
-            verify(itemRepository, times(1)).deleteById(itemId);
+            verify(itemRepository, times(1)).markAsDeleted(itemId);
         }
 
         @Test
@@ -157,7 +165,8 @@ class StoreServiceTest {
     void getAllItems() {
         Pageable pageable = PageRequest.of(0, 5);
         Item item = new Item();
-        ItemDto itemDto = new ItemDto();
+        CreateItemDto createItemDto = createItemDto();
+        ItemDto itemDto = toItemDto(createItemDto);
         Page<Item> itemPage = new PageImpl<>(Collections.singletonList(item), pageable, 1);
 
         when(itemRepository.findAll(pageable)).thenReturn(itemPage);
@@ -168,7 +177,8 @@ class StoreServiceTest {
         verify(itemRepository, times(1)).findAll(pageable);
         verify(itemMapper, times(1)).toItemDto(item);
 
-        assertThat(result.getContent().get(0)).isEqualTo(itemDto);
+        assertThat(result.getContent().get(0)).usingRecursiveComparison().ignoringFieldsOfTypes(UUID.class)
+                .isEqualTo(createItemDto);
         assertThat(result.getTotalElements()).isEqualTo(1);
     }
 
@@ -225,7 +235,6 @@ class StoreServiceTest {
         Page<SaleDto> result = storeService.getSoldItems(itemId, pageable);
 
         assertThat(result.getTotalElements()).isEqualTo(1);
-//        assertThat(result.getContent().get(0)).isEqualTo(sale);
     }
 
 
@@ -255,6 +264,23 @@ class StoreServiceTest {
                     .isThrownBy(() -> storeService.getStockQuantity(itemId));
         }
 
+    }
+
+    private CreateItemDto createItemDto() {
+        CreateItemDto createItemDto = new CreateItemDto();
+        createItemDto.setName("Item");
+        createItemDto.setPrice(new BigDecimal("10.0"));
+        createItemDto.setQuantity(10L);
+        return createItemDto;
+    }
+
+    private ItemDto toItemDto (CreateItemDto createItemDto) {
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(UUID.randomUUID());
+        itemDto.setName(createItemDto.getName());
+        itemDto.setPrice(createItemDto.getPrice());
+        itemDto.setQuantity(createItemDto.getQuantity());
+        return itemDto;
     }
 
 }

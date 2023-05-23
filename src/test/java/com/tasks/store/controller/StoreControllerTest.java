@@ -1,7 +1,9 @@
 package com.tasks.store.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tasks.store.model.CreateItemDto;
 import com.tasks.store.model.ItemDto;
+import com.tasks.store.model.SaleDto;
 import com.tasks.store.service.StoreService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,34 +43,35 @@ class StoreControllerTest {
 
     @Test
     void testAddItem() throws Exception {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setName("Test Item");
-        itemDto.setPrice(new BigDecimal("10.0"));
-        itemDto.setQuantity(10L);
+        CreateItemDto createItemDto = new CreateItemDto();
+        createItemDto.setName("Test Item");
+        createItemDto.setPrice(new BigDecimal("10.0"));
+        createItemDto.setQuantity(10L);
 
-        Mockito.when(storeService.addItem(Mockito.any(ItemDto.class))).thenReturn(itemDto);
+        Mockito.when(storeService.addItem(Mockito.any(CreateItemDto.class))).thenReturn(Mockito.any(ItemDto.class));
 
         mockMvc.perform(post("/api/v1/store/item")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(itemDto)))
+                        .content(objectMapper.writeValueAsString(createItemDto)))
                 .andExpect(status().isCreated());
     }
 
     @Test
     void testUpdateItem() throws Exception {
         UUID itemId = UUID.randomUUID();
-        ItemDto itemDto = new ItemDto();
-        itemDto.setName("Updated Test Item");
-        itemDto.setPrice(new BigDecimal("20.0"));
-        itemDto.setQuantity(5L);
+        CreateItemDto createItemDto = new CreateItemDto();
+        createItemDto.setName("Updated Test Item");
+        createItemDto.setPrice(new BigDecimal("20.0"));
+        createItemDto.setQuantity(5L);
 
-        Mockito.when(storeService.updateItem(Mockito.eq(itemId), Mockito.any(ItemDto.class))).thenReturn(itemDto);
+        Mockito.when(storeService.updateItem(Mockito.eq(itemId), Mockito.any(CreateItemDto.class))).thenReturn(new ItemDto());
 
         mockMvc.perform(put("/api/v1/store/item/{itemId}", itemId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(itemDto)))
+                        .content(objectMapper.writeValueAsString(createItemDto)))
                 .andExpect(status().isOk());
     }
+
 
     @Test
     void testDeleteItem() throws Exception {
@@ -82,12 +85,12 @@ class StoreControllerTest {
     @Test
     void testGetItem() throws Exception {
         UUID itemId = UUID.randomUUID();
-        ItemDto itemDto = new ItemDto();
-        itemDto.setName("Test Item");
-        itemDto.setPrice(new BigDecimal("10.0"));
-        itemDto.setQuantity(10L);
+        CreateItemDto createItemDto = new CreateItemDto();
+        createItemDto.setName("Test Item");
+        createItemDto.setPrice(new BigDecimal("10.0"));
+        createItemDto.setQuantity(10L);
 
-        Mockito.when(storeService.getItem(itemId)).thenReturn(itemDto);
+        Mockito.when(storeService.getItem(itemId)).thenReturn(Mockito.any(ItemDto.class));
 
         mockMvc.perform(get("/api/v1/store/item/{itemId}", itemId))
                 .andExpect(status().isOk());
@@ -103,7 +106,10 @@ class StoreControllerTest {
 
         Mockito.when(storeService.getAllItems(Mockito.any(PageRequest.class))).thenReturn(page);
 
-        mockMvc.perform(get("/api/v1/store/items").param("page", "0").param("size", "10"))
+        mockMvc.perform(get("/api/v1/store/items")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "DESC"))
                 .andExpect(status().isOk());
     }
 
@@ -116,18 +122,18 @@ class StoreControllerTest {
                 .andExpect(status().isOk());
     }
 
-//    @Test
-//    void testGetSoldItems() throws Exception {
-//        UUID itemId = UUID.randomUUID();
-//        Sale sale = new Sale();
-//        sale.setQuantitySold(1L);
-//        Page<Sale> page = new PageImpl<>(Collections.singletonList(sale));
-//
-//        Mockito.when(storeService.getSoldItems(Mockito.eq(itemId), Mockito.any(PageRequest.class))).thenReturn(page);
-//
-//        mockMvc.perform(get("/api/v1/store/item/{itemId}/sales", itemId).param("page", "0").param("size", "10"))
-//                .andExpect(status().isOk());
-//    }
+    @Test
+    void testGetSoldItems() throws Exception {
+        UUID itemId = UUID.randomUUID();
+        SaleDto saleDto = new SaleDto();
+        saleDto.setQuantitySold(1L);
+        Page<SaleDto> page = new PageImpl<>(Collections.singletonList(saleDto));
+
+        Mockito.when(storeService.getSoldItems(Mockito.eq(itemId), Mockito.any(PageRequest.class))).thenReturn(page);
+
+        mockMvc.perform(get("/api/v1/store/item/{itemId}/sales", itemId).param("page", "0").param("size", "10"))
+                .andExpect(status().isOk());
+    }
 
     @Test
     void testGetStockQuantity() throws Exception {
@@ -137,4 +143,5 @@ class StoreControllerTest {
         mockMvc.perform(get("/api/v1/store/item/{itemId}/stock", itemId))
                 .andExpect(status().isOk());
     }
+
 }
